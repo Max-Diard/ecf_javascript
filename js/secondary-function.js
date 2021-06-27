@@ -1,10 +1,7 @@
-
 //Function pour faire apparaître la licorne avant les résultats
-
 function addLoader(bool) {
 	// Ajout de la licorne
 	if (bool === true) {
-        
 		const newImg = document.createElement("img");
 		newImg.id = "loader";
 		newImg.src = "img/loader.gif";
@@ -24,6 +21,7 @@ function addLoader(bool) {
 function addLoaderNextRequest(bool) {
 	// Ajout de la licorne
 	if (bool === true) {
+        // On elève le button avant de faire apparaître la licorne
         container.removeChild(btnNextRequest);
 
 		const newImg = document.createElement("img");
@@ -44,7 +42,6 @@ function addLoaderNextRequest(bool) {
 
 // Function pour faire apparaître un loader pendant la récupération des covers
 function addLoaderCovers(bool){
-
 	// Ajout des licornes
 	if (bool === true) {
         // On boucle pour faire apparaître 5 licorne pour l'animation

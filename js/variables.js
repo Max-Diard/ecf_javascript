@@ -1,12 +1,11 @@
-
 // Section pour sélectionner les id
 
 // Ici dans la section du formulaire
 
 const form = document.querySelector(".container-form");
 const searchingValue = document.querySelector(".searching-value");
-const searchingButton = document.querySelector(".btn-search");
 const selectValue = document.querySelector(".select-value");
+const searchingButton = document.querySelector(".btn-search");
 
 // Ici pour sélectionner le button top
 
@@ -21,6 +20,7 @@ const imageNext = document.querySelector(".img-container-next-request")
 
 const table = document.querySelector(".board-search");
 const rowTable = document.querySelector(".row-body");
+let btnNextRequest = document.createElement("input");
 
 // Ici pour sélectionner le containe de la licorne et le paragraphe du résultat
 
@@ -51,8 +51,6 @@ const imgCoversLoader = document.querySelector('.modale-covers-loader');
 const imgCovers = document.querySelector('.modale-covers');
 
 // Fin de sélection des Id
-
-let btnNextRequest = document.createElement("input");
 
 // Création des variables 
 
