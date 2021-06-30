@@ -13,18 +13,18 @@ function searchingLaunch(){
     const request = new XMLHttpRequest();
     request.open("GET",
                  "http://musicbrainz.org/ws/2/recording/?query="+
-                    nameSelect +
+                    encodeURIComponent(nameSelect) +
                     ":\"" + 
-                    searchingValue.value + 
+                    encodeURIComponent(searchingValue.value) + 
                     "\"&fmt=json&limit=50&offset=" + 
-                    offsetValue + 
+                    encodeURIComponent(offsetValue) + 
                     "" ,
                  true);
     request.addEventListener(
         'readystatechange', function(){
             if (request.readyState === XMLHttpRequest.DONE) {
-                const recup = JSON.parse(request.response);
                 if (request.status === 200) {
+                    const recup = JSON.parse(request.response);
                     // Ajoute les résultats
                     newResult.textContent = "Il y a " + recup.count + " résultats";
                     form.appendChild(newResult);
@@ -87,7 +87,7 @@ function searchingLaunch(){
                 } 
                 else {
                     // Ajout d'une erreur si la requete ne fonctionne pas 
-                    recup.textContent = "ERREUR : Pas de musique";
+                    newResult.textContent = "ERREUR : Pas de musique";
                 }
             }
         }
@@ -171,19 +171,19 @@ function nextRequest(){
     // Requete AJAX 
     const requestNext = new XMLHttpRequest();
     requestNext.open("GET",
-                 "http://musicbrainz.org/ws/2/recording/?query="+
-                    nameSelect +
+                    "http://musicbrainz.org/ws/2/recording/?query="+
+                    encodeURIComponent(nameSelect) +
                     ":\"" + 
-                    searchingValue.value + 
+                    encodeURIComponent(searchingValue.value) + 
                     "\"&fmt=json&limit=50&offset=" + 
-                    offsetValue + 
+                    encodeURIComponent(offsetValue) + 
                     "" ,
                  true);
     requestNext.addEventListener(
         'readystatechange', function(){
             if (requestNext.readyState === XMLHttpRequest.DONE) {
-                const recupNext = JSON.parse(requestNext.response);
                 if (requestNext.status === 200) {
+                    const recupNext = JSON.parse(requestNext.response);
                     // On regarde si le résultat est plus petit que 50
                     if (recupNext.recordings.length < limit){
                         limit = recupNext.recordings.length;
@@ -228,7 +228,7 @@ function nextRequest(){
                 } 
                 else {
                     // Ajout d'une erreur si la requete ne fonctionne pas 
-                    recupNext.textContent = "ERREUR : Pas de musique";
+                    newResult.textContent = "ERREUR : Pas de musique";
                 }
             }
         }
@@ -263,7 +263,7 @@ function loadingModal(id, album){
     const request = new XMLHttpRequest();
     request.open("GET",
                 "http://musicbrainz.org/ws/2/recording/" +
-                requestModal.id + 
+                encodeURIComponent(requestModal.id) + 
                 "?inc=genres+artist-credits+ratings&fmt=json",
                 true);
     request.addEventListener(
@@ -462,12 +462,13 @@ function displayCover(id){
 
     // On mance la requête pour récupérer les images
     const request = new XMLHttpRequest();
-    request.open("GET", "http://coverartarchive.org/release/" + id, true);
+    request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id), true);
     request.addEventListener(
         'readystatechange', function(){
                 if (request.readyState === XMLHttpRequest.DONE) {
                     if (request.status === 200) {
                         const recup = JSON.parse(request.response);
+                        addLoaderCovers(false);
                         // On boucle sur le tableau pour récupérer les images
                         for(let i = 0; i < recup.images.length; i++){
                             const newCovers = document.createElement('img');
@@ -478,6 +479,7 @@ function displayCover(id){
                         }
                     }
                     else{
+                        addLoaderCovers(false);
                         // On met un message d'erreur si on récupére pas de covers
                         const emptyCovers = document.createElement('p');
                         emptyCovers.className = "empty-covers";
