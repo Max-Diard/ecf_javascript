@@ -272,8 +272,6 @@ function loadingModal(id, allAlbum){
                 if (request.readyState === XMLHttpRequest.DONE) {
                     const recupModal = JSON.parse(request.response);
                     if (request.status === 200) {
-                        console.log(recupModal)
-                        console.log(allAlbum)
                         // On crée les variables que l'on à besoin pour la requête
 
                         const genreLoopModal = recupModal['artist-credit'][0]["artist"]['genres'].length;
@@ -377,8 +375,6 @@ function loadingModal(id, allAlbum){
     request.send();
     //On regarde si il y'a des covers pour cette musique: si Oui, on lance la fonction d'affichage, si Non on fait apparaître un message !
     if (id['releases'] !== undefined && id['releases'][0].id){
-        // console.log(id['releases'][0].id)
-        // displayCover(id['releases'][0].id);
         displayCover(allAlbum);
     }
     else{
@@ -405,14 +401,12 @@ function addRatings(note){
 
     noteModal.appendChild(ratings);
 
-    console.log(note)
     //On calcule la note et on met le résultat dans une variable pour les "étoiles" vides
     let emptyStar = 5 - Math.floor(note);
-    console.log(emptyStar)
 
     // On place la note dans une variable entier
     let entierNote = Math.floor(note);
-    console.log(entierNote)
+    
     // On crée les "étoiles" pleines vis à vis de la note entier
     for(let i = 0 ; i < entierNote ; i++){
         createRatingsFull();
@@ -422,7 +416,6 @@ function addRatings(note){
     if (note % 1 != 0){
         // La note est une valeur decimal du coup on la fixe à 2 chiffres après la virgule et on slice le premier chiffre et la virgule
         let numberDecimal = note.toFixed(2).slice(2);
-        console.log(numberDecimal)
 
         // On regarde si le monbre decimal à une valeur plus grand que 25 et plus petit que 75, si c'est le cas on ajoute une "étoile" à moitié vide
         if (numberDecimal > 25 && numberDecimal < 75){
@@ -474,11 +467,11 @@ function displayCover(id){
             imgCovers.removeChild(imgCovers.firstChild);
         }
     }
-    console.log(id);
 
     // On lance un loader le temps que les images s'affiche
     addLoaderCovers(true);
 
+    // Si on a un tableau plus grand que 0 on lance une boucle
     if (id.length > 0){
         for (let i = 0; i < id.length; i++){
             // On mance la requête pour récupérer les images
@@ -490,7 +483,7 @@ function displayCover(id){
                             if (request.status === 200) {
                                 const recup = JSON.parse(request.response);
                                 addLoaderCovers(false);
-                                console.log(recup)
+                                
                                 // On boucle sur le tableau pour récupérer les images
                                 for(let i = 0; i < recup.images.length; i++){
                                     const newCovers = document.createElement('img');
@@ -525,7 +518,7 @@ function displayCover(id){
                         if (request.status === 200) {
                             const recup = JSON.parse(request.response);
                             addLoaderCovers(false);
-                            console.log(recup)
+                            
                             // On boucle sur le tableau pour récupérer les images
                             for(let i = 0; i < recup.images.length; i++){
                                 const newCovers = document.createElement('img');
@@ -549,36 +542,4 @@ function displayCover(id){
             )
         request.send();
     }
-    // On mance la requête pour récupérer les images
-    // const request = new XMLHttpRequest();
-    // request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id), true);
-    // request.addEventListener(
-    //     'readystatechange', function(){
-    //             if (request.readyState === XMLHttpRequest.DONE) {
-    //                 if (request.status === 200) {
-    //                     const recup = JSON.parse(request.response);
-    //                     addLoaderCovers(false);
-    //                     console.log(recup)
-    //                     // On boucle sur le tableau pour récupérer les images
-    //                     for(let i = 0; i < recup.images.length; i++){
-    //                         const newCovers = document.createElement('img');
-    //                         newCovers.className = "img-covers";
-    //                         newCovers.src = recup.images[i].thumbnails.small;
-
-    //                         imgCovers.appendChild(newCovers);
-    //                     }
-    //                 }
-    //                 else{
-    //                     addLoaderCovers(false);
-    //                     // On met un message d'erreur si on récupére pas de covers
-    //                     const emptyCovers = document.createElement('p');
-    //                     emptyCovers.className = "empty-covers";
-    //                     emptyCovers.textContent = "Pas de covers pour cette musique !"
-                
-    //                     imgCovers.appendChild(emptyCovers)
-    //                 }
-    //             }
-    //         }
-    //     )
-    // request.send();
 }
