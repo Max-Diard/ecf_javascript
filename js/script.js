@@ -350,6 +350,7 @@ function loadingModal(id, allAlbum){
                             }
                             // On rempli l'information de la modal pour l'abum
                             //  albumModal.textContent += album;
+                            console.log(allAlbum)
                             if (allAlbum.length > 0){
                                 for(let i = 0; i < allAlbum.length; i++){
                                     if (i + 1 != allAlbum.length){
@@ -374,6 +375,8 @@ function loadingModal(id, allAlbum){
         )
     request.send();
     //On regarde si il y'a des covers pour cette musique: si Oui, on lance la fonction d'affichage, si Non on fait apparaître un message !
+    console.log(id['releases'])
+    console.log(id['releases'][0].id)
     if (id['releases'] !== undefined && id['releases'][0].id){
         displayCover(allAlbum);
     }
@@ -472,7 +475,7 @@ function displayCover(id){
     addLoaderCovers(true);
 
     // Si on a un tableau plus grand que 0 on lance une boucle
-    if (id.length > 0){
+    if (id.length > 1){
         for (let i = 0; i < id.length; i++){
             // On mance la requête pour récupérer les images
             const request = new XMLHttpRequest();
@@ -492,10 +495,11 @@ function displayCover(id){
 
                                     imgCovers.appendChild(newCovers);
                                 }
-                            }
-                            else{
+                            } 
+                            // On regarde si on a déjà des covers et si on est arriver au bout de la boucle pour afficher le message
+                            else if(imgCovers.hasChildNodes && i == id.length){
                                 addLoaderCovers(false);
-                                // On met un message d'erreur si on récupére pas de covers
+                                //On met un message d'erreur si on récupére pas de covers
                                 const emptyCovers = document.createElement('p');
                                 emptyCovers.className = "empty-covers";
                                 emptyCovers.textContent = "Pas de covers pour cette musique !"

@@ -318,6 +318,7 @@ td:nth-child(5){
 .loader-covers {
     height: 7em;
     position: absolute;
+    margin: 1em;
 }
 
 .loader-covers:nth-child(1){
