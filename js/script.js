@@ -64,6 +64,7 @@ function searchingLaunch(){
                                     recup.recordings[i]["artist-credit"][0].name,
                                     releases,
                                     i,
+                                    recup.recordings[i]["releases"]
                                 )
                             }
                         }
@@ -96,7 +97,7 @@ function searchingLaunch(){
 }
 
 // Function pour faire apparaître les résultats
-function displaySearching(id, titre, nom, album, nbIndex){
+function displaySearching(id, titre, nom, album, nbIndex, allAlbum){
     // Ajouter la ligne du tableau
     const newRow = document.createElement("tr");
     newRow.className = "row-search";
@@ -141,7 +142,7 @@ function displaySearching(id, titre, nom, album, nbIndex){
             document.body.setAttribute("style", "overflow-y : hidden;");
 
             //On lance la requete pour récupérer les informations précis de la musique
-            loadingModal(id, album);
+            loadingModal(id, allAlbum);
         }
     );
 
@@ -237,7 +238,7 @@ function nextRequest(){
 }
 
 // Function pour faire apparaître la modal
-function loadingModal(id, album){
+function loadingModal(id, allAlbum){
     // Réinitialisation des champs de la modal
     titleModal.textContent = "Titre - ";
 
@@ -271,6 +272,8 @@ function loadingModal(id, album){
                 if (request.readyState === XMLHttpRequest.DONE) {
                     const recupModal = JSON.parse(request.response);
                     if (request.status === 200) {
+                        console.log(recupModal)
+                        console.log(allAlbum)
                         // On crée les variables que l'on à besoin pour la requête
 
                         const genreLoopModal = recupModal['artist-credit'][0]["artist"]['genres'].length;
@@ -348,7 +351,20 @@ function loadingModal(id, album){
                                 }
                             }
                             // On rempli l'information de la modal pour l'abum
-                             albumModal.textContent += album;
+                            //  albumModal.textContent += album;
+                            if (allAlbum.length > 0){
+                                for(let i = 0; i < allAlbum.length; i++){
+                                    if (i + 1 != allAlbum.length){
+                                        albumModal.textContent += allAlbum[i].title + " " + addSlash;
+                                    }
+                                    else{
+                                        albumModal.textContent += allAlbum[i].title;
+                                    }
+                                }
+                            }
+                            else {
+                                albumModal.textContent += allAlbum[0].title
+                            }
                         }
                     }
                     else {
@@ -361,7 +377,9 @@ function loadingModal(id, album){
     request.send();
     //On regarde si il y'a des covers pour cette musique: si Oui, on lance la fonction d'affichage, si Non on fait apparaître un message !
     if (id['releases'] !== undefined && id['releases'][0].id){
-        displayCover(id['releases'][0].id);
+        // console.log(id['releases'][0].id)
+        // displayCover(id['releases'][0].id);
+        displayCover(allAlbum);
     }
     else{
         const emptyCovers = document.createElement('p');
@@ -456,39 +474,111 @@ function displayCover(id){
             imgCovers.removeChild(imgCovers.firstChild);
         }
     }
+    console.log(id);
 
     // On lance un loader le temps que les images s'affiche
     addLoaderCovers(true);
 
-    // On mance la requête pour récupérer les images
-    const request = new XMLHttpRequest();
-    request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id), true);
-    request.addEventListener(
-        'readystatechange', function(){
-                if (request.readyState === XMLHttpRequest.DONE) {
-                    if (request.status === 200) {
-                        const recup = JSON.parse(request.response);
-                        addLoaderCovers(false);
-                        // On boucle sur le tableau pour récupérer les images
-                        for(let i = 0; i < recup.images.length; i++){
-                            const newCovers = document.createElement('img');
-                            newCovers.className = "img-covers";
-                            newCovers.src = recup.images[i].thumbnails.small;
+    if (id.length > 0){
+        for (let i = 0; i < id.length; i++){
+            // On mance la requête pour récupérer les images
+            const request = new XMLHttpRequest();
+            request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id[i].id), true);
+            request.addEventListener(
+                'readystatechange', function(){
+                        if (request.readyState === XMLHttpRequest.DONE) {
+                            if (request.status === 200) {
+                                const recup = JSON.parse(request.response);
+                                addLoaderCovers(false);
+                                console.log(recup)
+                                // On boucle sur le tableau pour récupérer les images
+                                for(let i = 0; i < recup.images.length; i++){
+                                    const newCovers = document.createElement('img');
+                                    newCovers.className = "img-covers";
+                                    newCovers.src = recup.images[i].thumbnails.small;
 
-                            imgCovers.appendChild(newCovers);
+                                    imgCovers.appendChild(newCovers);
+                                }
+                            }
+                            else{
+                                addLoaderCovers(false);
+                                // On met un message d'erreur si on récupére pas de covers
+                                const emptyCovers = document.createElement('p');
+                                emptyCovers.className = "empty-covers";
+                                emptyCovers.textContent = "Pas de covers pour cette musique !"
+                        
+                                imgCovers.appendChild(emptyCovers)
+                            }
                         }
                     }
-                    else{
-                        addLoaderCovers(false);
-                        // On met un message d'erreur si on récupére pas de covers
-                        const emptyCovers = document.createElement('p');
-                        emptyCovers.className = "empty-covers";
-                        emptyCovers.textContent = "Pas de covers pour cette musique !"
-                
-                        imgCovers.appendChild(emptyCovers)
+                )
+            request.send();
+        }
+    }
+    else{
+        // On mance la requête pour récupérer les images
+        const request = new XMLHttpRequest();
+        request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id[0].id), true);
+        request.addEventListener(
+            'readystatechange', function(){
+                    if (request.readyState === XMLHttpRequest.DONE) {
+                        if (request.status === 200) {
+                            const recup = JSON.parse(request.response);
+                            addLoaderCovers(false);
+                            console.log(recup)
+                            // On boucle sur le tableau pour récupérer les images
+                            for(let i = 0; i < recup.images.length; i++){
+                                const newCovers = document.createElement('img');
+                                newCovers.className = "img-covers";
+                                newCovers.src = recup.images[i].thumbnails.small;
+
+                                imgCovers.appendChild(newCovers);
+                            }
+                        }
+                        else{
+                            addLoaderCovers(false);
+                            // On met un message d'erreur si on récupére pas de covers
+                            const emptyCovers = document.createElement('p');
+                            emptyCovers.className = "empty-covers";
+                            emptyCovers.textContent = "Pas de covers pour cette musique !"
+                    
+                            imgCovers.appendChild(emptyCovers)
+                        }
                     }
                 }
-            }
-        )
-    request.send();
+            )
+        request.send();
+    }
+    // On mance la requête pour récupérer les images
+    // const request = new XMLHttpRequest();
+    // request.open("GET", "http://coverartarchive.org/release/" + encodeURIComponent(id), true);
+    // request.addEventListener(
+    //     'readystatechange', function(){
+    //             if (request.readyState === XMLHttpRequest.DONE) {
+    //                 if (request.status === 200) {
+    //                     const recup = JSON.parse(request.response);
+    //                     addLoaderCovers(false);
+    //                     console.log(recup)
+    //                     // On boucle sur le tableau pour récupérer les images
+    //                     for(let i = 0; i < recup.images.length; i++){
+    //                         const newCovers = document.createElement('img');
+    //                         newCovers.className = "img-covers";
+    //                         newCovers.src = recup.images[i].thumbnails.small;
+
+    //                         imgCovers.appendChild(newCovers);
+    //                     }
+    //                 }
+    //                 else{
+    //                     addLoaderCovers(false);
+    //                     // On met un message d'erreur si on récupére pas de covers
+    //                     const emptyCovers = document.createElement('p');
+    //                     emptyCovers.className = "empty-covers";
+    //                     emptyCovers.textContent = "Pas de covers pour cette musique !"
+                
+    //                     imgCovers.appendChild(emptyCovers)
+    //                 }
+    //             }
+    //         }
+    //     )
+    // request.send();
 }
